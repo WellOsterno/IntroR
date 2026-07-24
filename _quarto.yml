@@ -1,0 +1,18 @@
+project:
+  type: website
+
+website:
+  title: "Introdução a R aplicado à Demografia"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Início
+      - href: material/minicurso_1.qmd
+        text: Aula 1
+      - href: material/minicurso_2.qmd
+        text: Aula 2
+
+format:
+  html:
+    theme: cosmo
+    toc: true

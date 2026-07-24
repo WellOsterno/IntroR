@@ -29,7 +29,14 @@
 
 library(readxl)
 
-pop_single <- readxl::read_excel("E:/Minicursos/2026_Unicamp Intro a R/base_pop_s_age.xlsx")
+pop_single <- readxl::read_excel("bases/base_pop_s_age.xlsx")
+
+# O caminho (nas aspas acima) é o que identifica o arquivo que precisamos inserir.
+# Neste caso estamos usando um formato específico por termos baixado todo o minicurso online.
+# Para identificar o arquivo no seu computador, insira algo como:
+# "C:/Users/usuario/Desktop/grafico/base.xlsx"
+# lembre-se que cada computador tem caminhos e nomes diferentes. 
+
 
 # Visualizar a base
 head(pop_single)
@@ -88,7 +95,7 @@ print(mo_whippleI)
 
 
 # Importar a base da população de moçambique por quinquenio
-pop_abr <- readxl::read_excel("E:/Minicursos/2026_Unicamp Intro a R/base_pop_abr_age.xlsx")
+pop_abr <- readxl::read_excel("bases/base_pop_abr_age.xlsx")
 
 # Visualizar a base
 head(pop_abr)
@@ -130,7 +137,7 @@ print(sprague)
 
 
 # Importar as taxas específicas de mortalidade 
-nmx <- read_excel("E:/Minicursos/2026_Unicamp Intro a R/nmx_br_m_2022.xlsx")
+nmx <- read_excel("bases/nmx_br_m_2022.xlsx")
 
 head(nmx)
 
@@ -238,7 +245,7 @@ library(openxlsx)
 
 write.xlsx(
   x=br22,
-  file="E:/Minicursos/2026_Unicamp Intro a R/br22.xlsx")
+  file="bases/br22.xlsx")
 
 # Exportar gráficos em jpeg
 
@@ -254,7 +261,7 @@ graf <- ggplot(
   theme_minimal(base_size = 12)
 
 ggsave(
-  filename = "E:/Minicursos/2026_Unicamp Intro a R/grafico.jpeg",
+  filename = "bases/grafico.jpeg",
   plot = graf,
   width = 12,
   height = 7

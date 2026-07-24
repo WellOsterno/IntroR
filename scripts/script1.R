@@ -268,7 +268,13 @@ exemplo
 library(readxl)
 
 # Necesário ajustar o caminho do arquivo
-caminho <- "E:/Minicursos/2026_Unicamp Intro a R/base_pop.xlsx"
+# O caminho é o que identifica o arquivo que precisamos inserir.
+# Neste caso estamos usando um formato específico por termos baixado todo o minicurso online.
+# Para identificar o arquivo no seu computador, insira algo como:
+# "C:/Users/usuario/Desktop/grafico/base.xlsx"
+# lembre-se que cada computador tem caminhos e nomes diferentes. 
+
+caminho <- "bases/base_pop.xlsx"
 base_pop <- read_excel(caminho)
 
 # A função head() apresenta as primeiras linhas da base, para termos uma noção da base.

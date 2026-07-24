@@ -1,0 +1,43 @@
+---
+title: "Introdução ao R aplicado à Demografia"
+subtitle: "Material do minicurso"
+author: "Wellington Osterno"
+format:
+  html:
+    toc: true
+---
+
+# Bem-vindo/a!
+
+Este site reúne o material do minicurso **Introdução ao R aplicado à Demografia**.
+
+O objetivo é apresentar os principais conceitos da linguagem R e sua aplicação na análise de dados demográficos, incluindo organização de bases, manipulação de dados, visualização e construção de indicadores.
+
+
+## Importante:
+
+Ao entrar no repositório do curso, baixe-o por completo e descompacte do arquivo .zip. Isso vai permitir a reprodução correta dos exemplos.
+
+
+*Link do repositório*: https://github.com/WellOsterno/IntroR
+
+
+O repositório contém:
+- scripts R;
+- bases de dados;
+- arquivos do curso.
+
+## Objetivos do curso
+
+Ao final do minicurso, espera-se que os participantes sejam capazes de:
+
+- compreender a estrutura básica da linguagem R;
+- importar, organizar e transformar bases de dados;
+- utilizar pacotes básicos e específicos;
+- produzir gráficos para análise demográfica.
+
+## Programa do curso por aula
+
+- Aula 1: Interface do R, noções básicas de variáveis, base de dados, funções e pacotes
+- Aula 2: Gráficos e uso do pacote DemoTools
+- Aula 3: Visualização de Dados, Relacionamentos e boas práticas

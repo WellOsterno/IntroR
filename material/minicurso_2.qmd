@@ -49,6 +49,12 @@ pop_single <- readxl::read_excel("E:/Minicursos/2026_Unicamp Intro a R/base_pop_
 head(pop_single)
 ```
 
+O caminho (acima entre aspas) é o que identifica o arquivo que precisamos inserir. Neste caso estamos usando um formato específico por termos baixado todo o minicurso online. Para identificar o arquivo no seu computador, insira algo como:
+
+"C:/Users/usuario/Desktop/grafico/base.xlsx"
+
+Lembre-se que cada computador tem caminhos e nomes diferentes.
+
 Vamos agora calcular o índice de Whipple para todos os países com a função *check_heaping_whipple*. Utilize o helper (?) para entender os argumentos. Como o argumetno Value percisa de um vetor com as populações por idade, precisamos criar objetos que são vetores para cada população. Podemos criar com a ferramento básica do R ou com o dplyr.
 
 ```{r}
@@ -345,7 +351,7 @@ De acordo com o tempo e a necessidade, iremos conhecendo melhor as possibilidade
 Alguns outros tipos de gráficos são interessantes. Na tabela abaixo temos alguns dos principais tipos e exemplos básicos. Para facilitar, vamos utilizar dados fictícios.
 
 |           Gráfico            |         Exemplo de dados fictícios         |
-|:----------------------------:|:------------------------------------------:|
+|:---------------------------:|:-----------------------------------------:|
 |          **Barras**          |      Número de habitantes por região       |
 |     **Barras agrupadas**     |        População por sexo e região         |
 |    **Barras empilhadas**     |           Escolaridade por sexo            |

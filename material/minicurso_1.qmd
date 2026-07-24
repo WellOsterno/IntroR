@@ -437,6 +437,13 @@ base_pop <- read_excel(caminho)
 head(base_pop)
 ```
 
+
+O caminho é o que identifica o arquivo que precisamos inserir. Neste caso estamos usando um formato específico por termos baixado todo o minicurso online. Para identificar o arquivo no seu computador, insira algo como:
+
+"C:/Users/usuario/Desktop/grafico/base.xlsx"
+
+Lembre-se que cada computador tem caminhos e nomes diferentes.
+
 Se for preciso, use View() ou clique no nome do objeto no quadro à direita (o do ambiente do R) para visualizar a base completa. Podemos ver no resultado que a função head() apresentou duas colunas com os títulos: Idade Simples e Total.
 
 Para cada Idade Simples conseguimos ver o Total da população para o Brasil. A coluna Idade Simples é uma string (ou character) e a Total é numeric, que também pode ser chamada de double (dbl).
