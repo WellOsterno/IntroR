@@ -1,0 +1,501 @@
+---
+title: "Introdução a R aplicado a Demografia - 2"
+author: "Wellington Osterno"
+date: 2026-07-29
+format: html
+editor: visual
+---
+
+# Análise demográfica com R
+
+Se quisermos analisar processos da demografia, existem algumas possibilidades. Como vimos anteriormente, é possível realizar toda a análise de forma manual ou autoral, de modo que criaremos todas as transformações dos dados desde o começo. No entanto, já existem vários pacotes implementados no R que podem nos ajudar com esses tratamentos e análises. Um dos principais pacotes na demografia é o DemoTools. Podemos aprender mais sobre o pacote abrindo a sua documentação:
+
+<https://timriffe.github.io/DemoTools/>
+
+Podemos também utilizar o helper do R depois de baixar e carregar o pacote:
+
+```{r}
+
+# Se não tem remotes instalado, retire o # da linha abaixo.
+# install.packages("remotes")
+
+# requires the development version of rstan, sorry!
+# install.packages("rstan", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+# remotes::install_github("timriffe/DemoTools")
+
+# ?DemoTools
+```
+
+Vamos utilizar algumas funções do DemoTools para entender melhor as funções. Para facilitar, vamos refazer algumas atividades da disciplina Análise Demográfica I, que foram feitas utilizando Excel. Nesse momento, recriaremos com o R para mostrar um paralelo entre ambos.
+
+Na próxima seção (Gráficos) iremos criar os gráficos para avaliar os resultados.
+
+## Qualidade de dados: avaliação de preferência por dígitos
+
+A correção de dados demográficos a partir da preferência de dígitos dos respondentes é bastante comum e necessária na Demografia. Podemos realizar essa correção a partir de diversos métodos e ferramentas de análise. Na disciplina Análise Demográfica I vimos os métodos Whipple e de Myers, os quais já estão implementados no DemoTools.
+
+Outros métodos também estão disponibilizados e podem ser vistos na aba Short Manuals da documentação do pacote. Vamos utilizar os dados da disciplina, a população por idade simples de Brasil (1970), Colômbia (1973) e Moçambique (1997).
+
+Para a análise no R as colunas estão com uma formatação dos nomes que ajudam pouco, mas iremos tratar disso na terceira parte do minicurso.
+
+```{r}
+# Importar a base de dados
+
+library(readxl)
+
+pop_single <- readxl::read_excel("E:/Minicursos/2026_Unicamp Intro a R/base_pop_s_age.xlsx")
+
+# Visualizar a base
+head(pop_single)
+```
+
+Vamos agora calcular o índice de Whipple para todos os países com a função *check_heaping_whipple*. Utilize o helper (?) para entender os argumentos. Como o argumetno Value percisa de um vetor com as populações por idade, precisamos criar objetos que são vetores para cada população. Podemos criar com a ferramento básica do R ou com o dplyr.
+
+```{r}
+# Ferramenta básica do R
+br_vetor <- pop_single$`Brasil, 1970`
+co_vetor <- pop_single$`Colômbia, 1973`
+mo_vetor <- pop_single$`Moçambique, 1997`
+Age <- pop_single$Idade
+```
+
+Com dplyr a gente utilizaria:
+
+```{r}
+
+# Com dplyr
+# Perceba   que não estamos salvando o resultado no objeto, então o que vale é o que fizemos anteriormente.
+library(dplyr)
+pop_single %>%
+  pull(`Brasil, 1970`)
+```
+
+```{r}
+
+# Cálculo do Índice de Whipple por país
+
+library(DemoTools)
+
+br_whippleI <-  check_heaping_whipple(
+  Value = br_vetor, 
+  Age = Age, 
+  ageMin = 23, 
+  ageMax = 62, 
+  digit = c(0, 5)
+  )
+
+co_whippleI <- check_heaping_whipple(
+  Value = co_vetor, 
+  Age = Age, 
+  ageMin = 23, 
+  ageMax = 62, 
+  digit = c(0, 5)
+)
+
+mo_whippleI <- check_heaping_whipple(
+  Value = mo_vetor, 
+  Age = Age, 
+  ageMin = 23, 
+  ageMax = 62, 
+  digit = c(0, 5)
+)
+
+print(br_whippleI)
+print(co_whippleI)
+print(mo_whippleI)
+```
+
+Para avaliação gráfica, podemos conferir a distribuição da população por idade em algum país., neste caso Moçambique. Aprenderemos a criar os gráficos posteriormente.
+
+```{r}
+#| echo: false
+plot(Age, mo_vetor,
+     xlab="Idade",
+     ylab="População",
+     type='l',
+     main="População por idade simples em Moçambique (1997)")
+```
+
+## Interpolação da contagem populacional
+
+A interpolação é como um processo de destrinchar dados agregados em dados simples ou unitários. Nesse caso, uma população em grupos etários pode ser interpolada para uma contagem populacional em idades simples.
+
+Na disciplina utilizamos o método de Sprague e iremos refazê-lo aqui a partir da função *graduate* do DemoTools, com os dados agregados por grupo etário da população de Moçambique de 1997.
+
+```{R}
+# Importar a base da população de moçambique por quinquenio
+pop_abr <- readxl::read_excel("E:/Minicursos/2026_Unicamp Intro a R/base_pop_abr_age.xlsx")
+
+# Visualizar a base
+head(pop_abr)
+```
+
+```{r}
+# argumentos da função:
+# Value:
+mo_abr_vetor <- pop_abr$pop
+
+library(stringr)
+
+# Age
+AgeAbr <- pop_abr %>%
+  mutate(
+  Age =  
+    as.numeric(str_extract(
+    string = pop_abr$Idade, 
+    pattern = "\\d+"))
+  ) %>%
+  pull(Age)
+
+print(mo_abr_vetor)
+print(AgeAbr)
+```
+
+```{r}
+# Aplicar a função para interpolar
+
+sprague <- graduate(
+  Value = mo_abr_vetor, 
+  Age = AgeAbr, 
+  method = "sprague")
+
+single_age  <- names2age(sprague) # identifica a idade simples a partir do vetor criado pela função graduate.
+
+print(sprague)
+```
+
+Podemos ver o resultado a partir do gráfico abaixo, que representa a população interpolada em preto e a população por idade simples em vermelho.
+
+```{r}
+#| echo: false
+
+mo_70 <- c(
+  mo_vetor[1:70],
+  sum(mo_vetor[71:length(mo_vetor)])
+)
+
+# Primeiro gráfico
+plot(single_age, sprague,
+     type = "l",
+     ylab = "População",
+     xlab = "Idade",
+     main = "Interpolação com método de Sprague")
+
+# Permite sobrepor outro gráfico
+par(new = TRUE)
+
+# Segundo gráfico
+plot(single_age, mo_70,
+     type = "l",
+     axes = FALSE,     # não desenha os eixos novamente
+     xlab = "",
+     ylab = "",
+     col = "red")
+```
+
+## Construção de tabela de vida
+
+Também podemos construir a tabela de vida com uma função do DemoTools. Nesse exemplo vamos criar a tabela de vida da população masculina do Brasil no ano de 2022. Primeiro, carregamos os dados:
+
+```{r}
+# Importar as taxas específicas de mortalidade 
+
+nmx <- read_excel("E:/Minicursos/2026_Unicamp Intro a R/nmx_br_m_2022.xlsx")
+
+head(nmx)
+```
+
+```{r}
+# Definir as faixas etárias
+AgeLT <- nmx %>%
+  mutate(
+    age =  
+      as.numeric(str_extract(
+        string = idade, 
+        pattern = "\\d+"))
+  ) %>%
+  pull(age)
+
+# Definir as taxas específicas de mortalidade
+tem <- nmx$nmx
+
+# Tabela de vida por idade simples até 100 anos ou mais
+br22 <- lt_abridged2single(
+  nMx = tem,
+  Age = AgeLT,
+  axmethod = "un",
+  OAG = TRUE, # True se o ultimo grupo é aberto
+)
+
+View(br22) # para ver a tabela completa
+head(br22) # para ver só as primeiras cinco linhas
+```
+
+# Gráficos
+
+Os gráficos são largamente utilizados para a visualização tanto dos dados iniciais quanto após o tratamento, assim como os resultados de uma análise. Criaremos alguns a partir das três funções utilizadas do DemoTools e alguns outros exemplos gerais.
+
+Podemos utilizar a função *plot*, que é base do R, ou outros pacotes, como o *ggplot2*, bastante utilizado.
+
+## População de Moçambique em gráfico de linhas
+
+```{r}
+# utilizando o pacote basico do R
+plot(Age, mo_vetor,
+     xlab="Idade",
+     ylab="População",
+     type='l',
+     main="População por idade simples em Moçambique (1997)")
+
+# utilizando o ggplot2
+
+# install.packages(ggplot2)
+library(ggplot2)
+
+df1 <- data.frame(
+  Age = Age,
+  Populacao = mo_vetor
+)
+
+ggplot(
+  data=df1, 
+  aes(x = Age, y = Populacao)) +
+  geom_line(linewidth = 0.8) +
+  labs(
+    title = "População por idade simples em Moçambique (1997)",
+    x = "Idade",
+    y = "População"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+Com dataframes (bases de dados) o ggplot2 é bastante utilizando pelas suas possibilidades de uso. Outros pacotes podem ser utilizados em substituição ou de forma complementar a este pacote. Vamos continuar utilizando o ggplot2.
+
+## Interpolação e população observada
+
+O ggplot necessita de um dataframe para gerar o gráfico. Asism, podemos gerar o resultado de uma análise já em dataframe ou criar um para isso.
+
+```{r}
+# Base para o gráfico
+df2 <- data.frame(
+  Idade = single_age,
+  Sprague = sprague,
+  MO = mo_70
+)
+
+# Criação do gráfico com o ggplot2
+ggplot(df2, aes(x = Idade)) +
+  geom_line(
+    aes(y = Sprague, color = "Sprague"),
+    linewidth = 1
+  ) +
+  geom_line(
+    aes(y = MO, color = "Observado - 1997"),
+    linewidth = 0.7
+  ) +
+  scale_color_manual(
+    name = "Método",
+    values = c(
+      "Sprague" = "black",
+      "Observado - 1997" = "red"
+    )
+  ) +
+  labs(
+    title = "Interpolação com método de Sprague",
+    x = "Idade",
+    y = "População"
+  ) +
+  theme_classic(base_size = 10)
+```
+
+Em geral o ggplot tem a seguinte estrutura:
+
+- data = identifica qual é a base de dados a ser utilizada
+
+- aes() = identifica os eixos x e y da análise
+
+  - Se seu gráfico tem mais de um eixo y, podemos identificar só o eixo x nesse argumento
+
+- geom_line() indica que queremos um gráfico de linhas com os dados indicados em seu argumento "y".
+
+- labs() permitem que o usuário possa indicar quais são os títulos do gráfico e dos eixos.
+
+- theme() indica o tema geral do gráfico. Temos algumas opções, como minimal e classic que utilizamos acima. Mas também há outras opções na documentação.
+
+- Outras diversas opções são possíveis.
+
+  - scale_manual permite a especificação da estética do gráfico em vários aspectos:
+
+    - cores: scale_color_manual
+
+    - preenchimento: scale_fill_manual
+
+    - tamanho: scale_size_manual
+
+    - formatos (scale_shape_manual)
+
+  - linewidth, disponível em várias funções, indica o tamanho da linha
+
+  - fontsize, indica o tamanho da fonte da leta
+
+  - base_size indica o tamanho para todo o conjunto
+
+De acordo com o tempo e a necessidade, iremos conhecendo melhor as possibilidades.
+
+Alguns outros tipos de gráficos são interessantes. Na tabela abaixo temos alguns dos principais tipos e exemplos básicos. Para facilitar, vamos utilizar dados fictícios.
+
+|           Gráfico            |         Exemplo de dados fictícios         |
+|:----------------------------:|:------------------------------------------:|
+|          **Barras**          |      Número de habitantes por região       |
+|     **Barras agrupadas**     |        População por sexo e região         |
+|    **Barras empilhadas**     |           Escolaridade por sexo            |
+|        **Histograma**        |  Distribuição das idades de uma população  |
+|        **Densidade**         |           Distribuição de renda            |
+|         **Boxplot**          |     Salário por nível de escolaridade      |
+| **Dispersão (scatter plot)** |               Altura × peso                |
+|           **Área**           | Crescimento populacional ao longo dos anos |
+| **Mapa de calor (heatmap)**  |    Taxa de mortalidade por idade e ano     |
+
+# Exportação de arquivos
+
+Da mesma forma que importamos dados com o pacote readxl e sua função read_excel, podemos exportar os dados gerados no R. A função write_excel faz esse função:
+
+```{r}
+# install.packages(openxlsx)
+library(openxlsx)
+
+write.xlsx(
+  x=br22,
+  file="E:/Minicursos/2026_Unicamp Intro a R/br22.xlsx")
+```
+
+No caso dos gráficos, podemos exportá-los tanto pela aba "Plots" do R no quadrante direito no canto inferior, quanto via código pela função ggsave do ggplot2:
+
+```{r}
+graf <- ggplot(
+  data=df1, 
+  aes(x = Age, y = Populacao)) +
+  geom_line(linewidth = 0.8) +
+  labs(
+    title = "População por idade simples em Moçambique (1997)",
+    x = "Idade",
+    y = "População"
+  ) +
+  theme_minimal(base_size = 12)
+
+ggsave(
+  filename = "E:/Minicursos/2026_Unicamp Intro a R/grafico.jpeg",
+  plot = graf,
+  width = 12,
+  height = 7
+  
+)
+```
+
+# Loops facilitam a vida
+
+Loops são ferramentas essenciais para análise de dados, sobretudo para as atividades repetitivas. Quando temos três ou quatro países e precisamos dos dados para cada um deles, pode parecer interessante fazer um por vez. No entanto, se temos 40 países e 10 anos para cada país, fazer a tarefas 400 vezes não é a forma mais eficiente de realizar uma tarefa. Para isso utilizamos os loops. Há alguns tipos de loops, mas vamos aprender o *for* nesse minicurso.
+
+Outra vantagem, talvez ainda mais importante, é que ao criar um loop, o usuário tem certeza do que está sendo feito em todos os componentes.
+
+O loop tem a seguinte estrutura:
+
+```{r}
+#| eval: false
+
+
+for (elemento in conjunto) {
+  
+  # código que será repetido
+  
+}
+```
+
+- O for indica o início do loop
+
+- Os elementos entre parênteses indica que a atividade será feita em cada *elemento* daquele *conjunto*.
+
+- Entre chaves ficam as atividades a serem executadas (e repetidas).
+
+O conjunto pode ser um conjunto de anos, como 2000, 2010 e 2022. O código que será repetido vai ser feito para cada elemento desse conjunto. Assim, pensando na Demografia brasileiro, pode-se ter uma análise para os últimos três anos censitários.
+
+Um exemplo com soma pode ser o seguinte: tenho um objeto chamado "soma", que é igual a 0. A este objeto queremos somar os número 2, 4, 6 e 8. Assim, o resultado final será: 0+2+4+6+8 = 20. Posso criar um loop que soma cada número desse ao meu objeto soma. Perceba que o loop só finaliza quando ele é feito para todos os elementos e, depois disso, ele segue para o restante do código.
+
+```{r}
+# Exemplo inicial
+
+# difinir o conjunto
+numeros <- c(2, 4, 6, 8)
+
+# definir o início da soma
+soma <- 0
+
+# loop da soma
+
+for(n in numeros){
+  
+  soma <- soma + n
+  print(soma)
+}
+
+print("resultado fora do loop")
+```
+
+## Loop para o Índice de Whipple
+
+Ao calcular o índice de Whipple, realizamos a mesma função para cada país:
+
+```{r}
+#| eval: false
+
+
+br_whippleI <-  check_heaping_whipple(
+  Value = br_vetor, 
+  Age = Age, 
+  ageMin = 23, 
+  ageMax = 62, 
+  digit = c(0, 5)
+)
+
+co_whippleI <- check_heaping_whipple(
+  Value = co_vetor, 
+  Age = Age, 
+  ageMin = 23, 
+  ageMax = 62, 
+  digit = c(0, 5)
+)
+
+mo_whippleI <- check_heaping_whipple(
+  Value = mo_vetor, 
+  Age = Age, 
+  ageMin = 23, 
+  ageMax = 62, 
+  digit = c(0, 5)
+)
+
+print(br_whippleI)
+print(co_whippleI)
+print(mo_whippleI)
+```
+
+Porém, podemos criar um loop para tornar essa tarefa mais rápida e mais fácil de ser ajustada depois.
+
+```{r}
+# primeiro criamos o conjunto de países
+paises <- c("Brasil, 1970","Colômbia, 1973","Moçambique, 1997")
+
+# Dentro do loop, o "p" no argumento Value indica qual coluna está sendo usada da base "pop_single", da mesma forma que criamos os vetores dos países
+
+for (p in paises) {
+  resultado <- check_heaping_whipple(
+    Value = pop_single[[p]], 
+    Age = Age, 
+    ageMin = 23, 
+    ageMax = 62, 
+    digit = c(0, 5)
+  )
+  
+  print(resultado)
+}
+  
+```
