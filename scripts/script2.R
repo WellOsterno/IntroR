@@ -272,7 +272,7 @@ ggplot(dadosfic,
 
 # Este arquivo é um csv, usar read_excel não funcionará.
 
-pnad <- read.csv("E:/Minicursos/IntroR/bases/amostra_pnad_2024.csv")
+pnad <- read.csv("bases/amostra_pnad_2024.csv")
 
 # Conferir a base
 head(pnad)
@@ -343,7 +343,7 @@ ggplot(base2,
 library(readr)
 
 df_sim <- read_delim(
-  file = "E:/Minicursos/IntroR/bases/sim_obitos_2020_2024.csv",
+  file = "bases/sim_obitos_2020_2024.csv",
   delim=";",
   skip=3,
   n_max=20,
