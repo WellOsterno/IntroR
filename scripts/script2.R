@@ -9,11 +9,11 @@
 
 
 # Se não tem remotes instalado, retire o # da linha abaixo.
-# install.packages("remotes")
+install.packages("remotes")
 
 # requires the development version of rstan, sorry!
-# install.packages("rstan", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-# remotes::install_github("timriffe/DemoTools")
+install.packages("rstan", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+remotes::install_github("timriffe/DemoTools")
 
 # Conferir o helper de Demotools
 ?DemoTools
@@ -170,7 +170,7 @@ head(br22) # para ver só as primeiras cinco linhas
 #############################################
 #############    GRÁFICOS    ################
 
-# População de moçambique por idade simples
+# 1. População de moçambique por idade simples
 # utilizando o pacote basico do R
 plot(Age, mo_vetor,
      xlab="Idade",
@@ -200,9 +200,14 @@ ggplot(
   ) +
   theme_minimal(base_size = 12)
 
-
-
 # Interpolação da população e a população observada
+
+# criar vetor da população de Moçambique com grupo aberto nos 70 anos
+mo_70 <- c(
+  mo_vetor[1:70],
+  sum(mo_vetor[71:length(mo_vetor)])
+)
+
 # Base para o gráfico
 df2 <- data.frame(
   Idade = single_age,
@@ -233,6 +238,180 @@ ggplot(df2, aes(x = Idade)) +
     y = "População"
   ) +
   theme_classic(base_size = 10)
+
+#############################################################
+###############    EXEMPLO DE GRÁFICOS    ###################
+
+############## Scatterplot
+
+# Criar Base fictícia
+dadosfic <- data.frame(
+  Pais = c("Alfa", "Beta", "Gama", "Delta", "Épsilon",
+           "Zeta", "Eta", "Teta", "Iota", "Kappa"),
+  ExpectativaVida = c(60, 64, 67, 70, 73, 76, 79, 81, 83, 85),
+  TFT = c(5.8, 5.0, 4.3, 3.6, 3.0, 2.5, 2.0, 1.8, 1.6, 1.4)
+)
+
+#Gráfico
+ggplot(dadosfic,
+       aes(x = ExpectativaVida,
+           y = TFT)) +
+  geom_point(size = 3) +
+  labs(
+    x = "Expectativa de vida ao nascer (anos)",
+    y = "Taxa de fecundidade total",
+    title = "Relação entre expectativa de vida e fecundidade"
+  ) +
+  theme_classic(base_size = 12)
+
+
+############## Histograma
+
+# Importar a amostra SEM DESIGN da PNADc 2024
+# Pesquisa Suplementar sobre Educação
+
+# Este arquivo é um csv, usar read_excel não funcionará.
+
+pnad <- read.csv("E:/Minicursos/IntroR/bases/amostra_pnad_2024.csv")
+
+# Conferir a base
+head(pnad)
+
+# Criar o histograma para qualquer coluna, como UF
+
+ggplot(pnad,
+       aes(x=V2001)) +
+  geom_histogram() +
+  labs(
+    x="Número de pessoas no domicílio",
+    y="Frequência",
+    title="Histograma de número de pessoas no domicílio (V2001)"
+  )  +
+  theme_classic()
+
+
+############## Boxplot
+
+base1 <- pnad %>%
+  select("V2009","V2010")
+
+glimpse(base1)
+
+base1 <- base1 %>%
+  mutate(
+    racacor = case_when(
+      V2010== 1 ~ "Branca",
+      V2010== 2 ~ "Preta",
+      V2010== 3 ~ "Amarela",
+      V2010== 4 ~ "Parda",
+      V2010== 5 ~ "Indígena",
+      V2010== 9 ~ "Ignorado"
+    )
+  )
+# Gráfico
+ggplot(data = base1,
+       aes(x = V2009, y = racacor)) +
+  geom_boxplot() +
+  labs(
+    x="Idade",
+    y="Raça/Cor",
+    title="Distribuição das idades dos respondentes por raça/cor"
+  ) +
+  theme_classic()
+
+
+############## Barras
+
+base2 <- base1 %>%
+  group_by(racacor) %>%
+  summarise(
+    Frequencia = n()
+  )
+
+ggplot(base2,
+       aes(x=racacor, y=Frequencia))+
+  geom_col() +
+  theme_classic()
+
+
+############# Barras empilhadas
+
+# Dados do SIM:
+# Número de óbitos por ano e pot capítulo da CID-10
+
+# install.packages("readr")
+library(readr)
+
+df_sim <- read_delim(
+  file = "E:/Minicursos/IntroR/bases/sim_obitos_2020_2024.csv",
+  delim=";",
+  skip=3,
+  n_max=20,
+  locale=locale(encoding = "latin1")
+)
+
+# Conferir a base
+head(df_sim)
+
+# Causas de interesse
+causas <- c(
+  "I.   Algumas doenças infecciosas e parasitárias",
+  "II.  Neoplasias (tumores)",
+  "IV.  Doenças endócrinas nutricionais e metabólicas",
+  "IX.  Doenças do aparelho circulatório",
+  "X.   Doenças do aparelho respiratório",
+  "XX.  Causas externas de morbidade e mortalidade"
+)
+
+# Manter só essas causas
+df_sim <- df_sim %>%
+  filter(`Capítulo CID-10` %in% causas)
+
+# Conferir a base
+head(df_sim)
+
+# Criar porcentagem:
+soma2020 <- df_sim %>% select(`2020`) %>% sum()
+soma2024 <- df_sim %>% select(`2024`) %>% sum()
+
+df_sim <- df_sim %>% 
+  mutate(
+    perc2020 = `2020`/soma2020,
+    perc2024 = `2024`/soma2024
+  )
+
+# Agora vamos tornar essa base wide para long:
+
+library(tidyr)
+
+df1 <- pivot_longer(
+  data=df_sim %>% select(!c(Total,`2020`,`2024`)), 
+  cols=c(perc2020, perc2024),
+  names_to="Ano",
+  values_to="Perc"
+)
+
+# Ajustar o ano na coluna
+df1 <- df1 %>%
+  mutate(
+    Ano = case_when(
+      Ano == "perc2020" ~ "2020",
+      Ano == "perc2024" ~ "2024"
+    )
+  )
+
+
+# df_graf <- df1 %>% filter(`Capítulo CID-10` %in% causas)
+
+ggplot(df1,
+       aes(y=Ano,x=Perc,fill=`Capítulo CID-10`)) +
+  geom_bar(position = "stack", stat="identity") +
+  labs(
+    x="Porcentagem",
+    y="Ano",
+    title="Proporção de óbitos por causa de mortalidade no Brasil em 2020 e 2024"
+  ) +
+  theme_classic(base_size=10)
 
 
 ################################################################

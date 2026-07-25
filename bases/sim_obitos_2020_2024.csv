@@ -1,0 +1,34 @@
+ Mortalidade - Brasil
+Óbitos p/Residênc por Capítulo CID-10 e Ano do Óbito
+Período:2020, 2024
+"Capítulo CID-10";"2020";"2024";"Total"
+"I.   Algumas doenças infecciosas e parasitárias";267287;75370;342657
+"II.  Neoplasias (tumores)";229300;264845;494145
+"III. Doenças sangue órgãos hemat e transt imunitár";6596;7594;14190
+"IV.  Doenças endócrinas nutricionais e metabólicas";92749;90178;182927
+"V.   Transtornos mentais e comportamentais";17168;19593;36761
+"VI.  Doenças do sistema nervoso";45598;59756;105354
+"VII. Doenças do olho e anexos";24;36;60
+"VIII.Doenças do ouvido e da apófise mastóide";164;371;535
+"IX.  Doenças do aparelho circulatório";357741;398605;756346
+"X.   Doenças do aparelho respiratório";148773;194063;342836
+"XI.  Doenças do aparelho digestivo";66667;81543;148210
+"XII. Doenças da pele e do tecido subcutâneo";6796;12671;19467
+"XIII.Doenças sist osteomuscular e tec conjuntivo";6128;7964;14092
+"XIV. Doenças do aparelho geniturinário";44860;62649;107509
+"XV.  Gravidez parto e puerpério";2147;1584;3731
+"XVI. Algumas afec originadas no período perinatal";18770;16253;35023
+"XVII.Malf cong deformid e anomalias cromossômicas";9673;10318;19991
+"XVIII.Sint sinais e achad anorm ex clín e laborat";90345;69088;159433
+"XX.  Causas externas de morbidade e mortalidade";146038;159534;305572
+"Total";1556824;1532015;3088839
+ Fonte: MS/SVSA/CGIAE - Sistema de Informações sobre Mortalidade - SIM
+ Notas:
+ 
+ Dados finais disponíveis até 2024 e atualizados em 02/12/2025.
+ Em 2011, houve uma mudança no conteúdo da Declaração de Óbito, com maior detalhamento das informações coletadas. Para este ano, foram
+ utilizados simultaneamente os dois formulários. Para mais detalhes sobre as mudanças ocorridas e os seus efeitos, veja o documento
+ "Sistema de Informações sobre Mortalidade - SIM. Consolidação da base de dados de 2011".
+ No dia 13/06/2019, os arquivos do SIM referentes ao ano de notificação 2017 foram atualizados, com alteração das causas básicas de 2 registros e exclusão de 1 registro.
+ No dia 01/04/2020, os arquivos do SIM referentes ao ano de notificação 2019 foram atualizados, com alteração das causas básicas de 4 registros e exclusão de 1 registro.
+ 

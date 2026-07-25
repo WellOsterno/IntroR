@@ -43,7 +43,7 @@ Para a análise no R as colunas estão com uma formatação dos nomes que ajudam
 
 library(readxl)
 
-pop_single <- readxl::read_excel("E:/Minicursos/2026_Unicamp Intro a R/base_pop_s_age.xlsx")
+pop_single <- readxl::read_excel("bases/base_pop_s_age.xlsx")
 
 # Visualizar a base
 head(pop_single)
@@ -130,7 +130,7 @@ Na disciplina utilizamos o método de Sprague e iremos refazê-lo aqui a partir 
 
 ```{R}
 # Importar a base da população de moçambique por quinquenio
-pop_abr <- readxl::read_excel("E:/Minicursos/2026_Unicamp Intro a R/base_pop_abr_age.xlsx")
+pop_abr <- readxl::read_excel("bases/base_pop_abr_age.xlsx")
 
 # Visualizar a base
 head(pop_abr)
@@ -206,7 +206,7 @@ Também podemos construir a tabela de vida com uma função do DemoTools. Nesse 
 ```{r}
 # Importar as taxas específicas de mortalidade 
 
-nmx <- read_excel("E:/Minicursos/2026_Unicamp Intro a R/nmx_br_m_2022.xlsx")
+nmx <- read_excel("bases/nmx_br_m_2022.xlsx")
 
 head(nmx)
 ```
@@ -233,7 +233,7 @@ br22 <- lt_abridged2single(
   OAG = TRUE, # True se o ultimo grupo é aberto
 )
 
-View(br22) # para ver a tabela completa
+# View(br22) # para ver a tabela completa
 head(br22) # para ver só as primeiras cinco linhas
 ```
 
@@ -348,19 +348,106 @@ Em geral o ggplot tem a seguinte estrutura:
 
 De acordo com o tempo e a necessidade, iremos conhecendo melhor as possibilidades.
 
-Alguns outros tipos de gráficos são interessantes. Na tabela abaixo temos alguns dos principais tipos e exemplos básicos. Para facilitar, vamos utilizar dados fictícios.
+Alguns outros tipos de gráficos são interessantes. Na tabela abaixo temos alguns dos principais tipos e exemplos básicos.
 
-|           Gráfico            |         Exemplo de dados fictícios         |
+|           Gráfico            |                  Exemplo                   |
 |:---------------------------:|:-----------------------------------------:|
 |          **Barras**          |      Número de habitantes por região       |
-|     **Barras agrupadas**     |        População por sexo e região         |
-|    **Barras empilhadas**     |           Escolaridade por sexo            |
+|    **Barras empilhadas**     |       Proporção de óbitos por causa        |
 |        **Histograma**        |  Distribuição das idades de uma população  |
 |        **Densidade**         |           Distribuição de renda            |
 |         **Boxplot**          |     Salário por nível de escolaridade      |
 | **Dispersão (scatter plot)** |               Altura × peso                |
 |           **Área**           | Crescimento populacional ao longo dos anos |
 | **Mapa de calor (heatmap)**  |    Taxa de mortalidade por idade e ano     |
+
+## Exemplos de gráficos
+
+Abaixo temos alguns tipos de gráficos com exemplos. Na última seção do minicurso iremos falar mais sobre visualização de dados, mas nesse momento o interessante é entender como criar os gráficos básicos.
+
+### Barras
+
+```{r}
+# Importar a amostra SEM DESIGN da PNADc 2024
+# Pesquisa Suplementar sobre Educação
+
+# Este arquivo é um csv, usar read_excel não funcionará.
+
+pnad <- read.csv("bases/amostra_pnad_2024.csv")
+
+# Conferir a base
+head(pnad)
+```
+
+```{r}
+base1 <- pnad %>%
+  select("V2009","V2010")
+
+glimpse(base1)
+
+base1 <- base1 %>%
+  mutate(
+    racacor = case_when(
+      V2010== 1 ~ "Branca",
+      V2010== 2 ~ "Preta",
+      V2010== 3 ~ "Amarela",
+      V2010== 4 ~ "Parda",
+      V2010== 5 ~ "Indígena",
+      V2010== 9 ~ "Ignorado"
+    )
+  )
+# Gráfico
+ggplot(data = base1,
+  aes(x = V2009, y = racacor)) +
+  geom_boxplot() +
+  labs(
+    x="Idade",
+    y="Raça/Cor",
+    title="Distribuição das idades dos respondentes por raça/cor"
+  ) +
+  theme_classic()
+
+```
+
+### Barras empilhadas
+
+Aqui vamos utilizar dados de óbitos. Porém, por causa da estrutura do arquivo que o TabNet disponibiliza, iremos utilizar a função read_delim para indica qual parte da tabela queremos.
+
+Ao abrir o arquivo sim_obitos_2020_2024 vê-se que o cabeçalho da tabela começa na linha 4 e que temos 20 linhas até o fim da tabela de interesse - sem contar o total, que podemos calcular posteriormente.
+
+```{r}
+# Dados do SIM:
+# Número de óbitos por ano e pot capítulo da CID-10
+
+df_sim <- read_delim(
+  file = "/bases/sim_obitos_2020_2024.csv",
+  delim=";",
+  skip=4,
+  n_max=20,
+  locale=locale(encoding = "latin1")
+)
+
+# Conferir a base
+head(df_sim)
+```
+
+### Histograma
+
+```{r}
+
+```
+
+### Boxplot
+
+```{r}
+
+```
+
+### Scatterplot
+
+```{r}
+
+```
 
 # Exportação de arquivos
 
@@ -372,7 +459,7 @@ library(openxlsx)
 
 write.xlsx(
   x=br22,
-  file="E:/Minicursos/2026_Unicamp Intro a R/br22.xlsx")
+  file="bases/br22.xlsx")
 ```
 
 No caso dos gráficos, podemos exportá-los tanto pela aba "Plots" do R no quadrante direito no canto inferior, quanto via código pela função ggsave do ggplot2:
@@ -390,7 +477,7 @@ graf <- ggplot(
   theme_minimal(base_size = 12)
 
 ggsave(
-  filename = "E:/Minicursos/2026_Unicamp Intro a R/grafico.jpeg",
+  filename = "bases/grafico.jpeg",
   plot = graf,
   width = 12,
   height = 7

@@ -13,19 +13,13 @@ Este site reúne o material do minicurso **Introdução ao R aplicado à Demogra
 
 O objetivo é apresentar os principais conceitos da linguagem R e sua aplicação na análise de dados demográficos, incluindo organização de bases, manipulação de dados, visualização e construção de indicadores.
 
-
 ## Importante:
 
 Ao entrar no repositório do curso, baixe-o por completo e descompacte do arquivo .zip. Isso vai permitir a reprodução correta dos exemplos.
 
+[**Repositório do minicurso (GitHub)**](https://github.com/WellOsterno/IntroR)
 
-*Link do repositório*: https://github.com/WellOsterno/IntroR
-
-
-O repositório contém:
-- scripts R;
-- bases de dados;
-- arquivos do curso.
+O repositório contém: - scripts R; - bases de dados; - arquivos do curso.
 
 ## Objetivos do curso
 
