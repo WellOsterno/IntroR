@@ -430,7 +430,7 @@ Os arquivo csv são arquivos sepados por vírgulas (***c**omma **s**eparated **v
 library(readxl)
 
 # Necesário ajustar o caminho do arquivo
-caminho <- "E:/Minicursos/IntroR/base_pop.xlsx"
+caminho <- "E:/Minicursos/IntroR/bases/base_pop.xlsx"
 base_pop <- read_excel(caminho)
 
 # A função head() apresenta as primeiras linhas da base, para termos uma noção da base.
