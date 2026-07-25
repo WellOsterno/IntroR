@@ -428,16 +428,15 @@ write.xlsx(
 
 # Exportar gráficos em jpeg
 
-graf <- ggplot(
-  data=df1, 
-  aes(x = Age, y = Populacao)) +
-  geom_line(linewidth = 0.8) +
+graf <- ggplot(df1,
+               aes(y=Ano,x=Perc,fill=`Capítulo CID-10`)) +
+  geom_bar(position = "stack", stat="identity") +
   labs(
-    title = "População por idade simples em Moçambique (1997)",
-    x = "Idade",
-    y = "População"
+    x="Porcentagem",
+    y="Ano",
+    title="Proporção de óbitos por causa de mortalidade no Brasil em 2020 e 2024"
   ) +
-  theme_minimal(base_size = 12)
+  theme_classic(base_size=10)
 
 ggsave(
   filename = "bases/grafico.jpeg",
