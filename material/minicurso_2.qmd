@@ -42,10 +42,10 @@ Para a análise no R as colunas estão com uma formatação dos nomes que ajudam
 # Importar a base de dados
 
 library(readxl)
-
-pop_single <- readxl::read_excel("bases/base_pop_s_age.xlsx")
-
-# Visualizar a base
+# 
+pop_single <- readxl::read_excel("E:/Minicursos/IntroR/bases/base_pop_s_age.xlsx")
+# 
+# # Visualizar a base
 head(pop_single)
 ```
 
@@ -88,7 +88,7 @@ br_whippleI <-  check_heaping_whipple(
   ageMin = 23, 
   ageMax = 62, 
   digit = c(0, 5)
-  )
+)
 
 co_whippleI <- check_heaping_whipple(
   Value = co_vetor, 
@@ -130,7 +130,7 @@ Na disciplina utilizamos o método de Sprague e iremos refazê-lo aqui a partir 
 
 ```{R}
 # Importar a base da população de moçambique por quinquenio
-pop_abr <- readxl::read_excel("bases/base_pop_abr_age.xlsx")
+pop_abr <- readxl::read_excel("E:/Minicursos/IntroR/bases/base_pop_abr_age.xlsx")
 
 # Visualizar a base
 head(pop_abr)
@@ -148,8 +148,8 @@ AgeAbr <- pop_abr %>%
   mutate(
   Age =  
     as.numeric(str_extract(
-    string = pop_abr$Idade, 
-    pattern = "\\d+"))
+      string = pop_abr$Idade, 
+      pattern = "\\d+"))
   ) %>%
   pull(Age)
 
@@ -206,7 +206,7 @@ Também podemos construir a tabela de vida com uma função do DemoTools. Nesse 
 ```{r}
 # Importar as taxas específicas de mortalidade 
 
-nmx <- read_excel("bases/nmx_br_m_2022.xlsx")
+nmx <- read_excel("E:/Minicursos/IntroR/bases/nmx_br_m_2022.xlsx")
 
 head(nmx)
 ```
@@ -351,7 +351,7 @@ De acordo com o tempo e a necessidade, iremos conhecendo melhor as possibilidade
 Alguns outros tipos de gráficos são interessantes. Na tabela abaixo temos alguns dos principais tipos e exemplos básicos.
 
 |           Gráfico            |                  Exemplo                   |
-|:---------------------------:|:-----------------------------------------:|
+|:----------------------------:|:------------------------------------------:|
 |          **Barras**          |      Número de habitantes por região       |
 |    **Barras empilhadas**     |       Proporção de óbitos por causa        |
 |        **Histograma**        |  Distribuição das idades de uma população  |
@@ -363,9 +363,33 @@ Alguns outros tipos de gráficos são interessantes. Na tabela abaixo temos algu
 
 ## Exemplos de gráficos
 
-Abaixo temos alguns tipos de gráficos com exemplos. Na última seção do minicurso iremos falar mais sobre visualização de dados, mas nesse momento o interessante é entender como criar os gráficos básicos.
+Abaixo temos alguns tipos de gráficos com exemplos. A proposta aqui é mostrar qual é o mínimo para se criar um gráfico e mostar que não são códigos complexos. Apesar disso, não são gráficos muito elaborados, mas que podem ser melhorados da maneira que o autor preferir. Na última seção do minicurso iremos falar mais sobre visualização de dados, mas nesse momento o interessante é entender como criar os gráficos básicos.
 
-### Barras
+### Scatterplot
+
+```{r}
+# Base fictícia
+dadosfic <- data.frame(
+  Pais = c("Alfa", "Beta", "Gama", "Delta", "Épsilon",
+           "Zeta", "Eta", "Teta", "Iota", "Kappa"),
+  ExpectativaVida = c(60, 64, 67, 70, 73, 76, 79, 81, 83, 85),
+  TFT = c(5.8, 5.0, 4.3, 3.6, 3.0, 2.5, 2.0, 1.8, 1.6, 1.4)
+)
+
+# Gráfico
+ggplot(dadosfic,
+       aes(x = ExpectativaVida,
+           y = TFT)) +
+  geom_point(size = 3) +
+  labs(
+    x = "Expectativa de vida ao nascer (anos)",
+    y = "Taxa de fecundidade total",
+    title = "Relação entre expectativa de vida e fecundidade"
+  ) +
+  theme_classic(base_size = 12)
+```
+
+### Histograma
 
 ```{r}
 # Importar a amostra SEM DESIGN da PNADc 2024
@@ -373,11 +397,27 @@ Abaixo temos alguns tipos de gráficos com exemplos. Na última seção do minic
 
 # Este arquivo é um csv, usar read_excel não funcionará.
 
-pnad <- read.csv("bases/amostra_pnad_2024.csv")
+pnad <- read.csv("E:/Minicursos/IntroR/bases/amostra_pnad_2024.csv")
 
 # Conferir a base
 head(pnad)
+
+# Criar o histograma para qualquer coluna, como UF
+
+ggplot(pnad,
+       aes(x=V2001)) +
+  geom_histogram() +
+  labs(
+    x="Número de pessoas no domicílio",
+    y="Frequência",
+    title="Histograma de número de pessoas no domicílio (V2001)"
+  )  +
+  theme_classic()
+
+
 ```
+
+### Boxplot
 
 ```{r}
 base1 <- pnad %>%
@@ -398,7 +438,7 @@ base1 <- base1 %>%
   )
 # Gráfico
 ggplot(data = base1,
-  aes(x = V2009, y = racacor)) +
+       aes(x = V2009, y = racacor)) +
   geom_boxplot() +
   labs(
     x="Idade",
@@ -407,6 +447,21 @@ ggplot(data = base1,
   ) +
   theme_classic()
 
+```
+
+### Barras
+
+```{r}
+base2 <- base1 %>%
+    group_by(racacor) %>%
+    summarise(
+        Frequencia = n()
+    )
+
+ggplot(base2,
+       aes(x=racacor, y=Frequencia))+
+  geom_col() +
+  theme_classic()
 ```
 
 ### Barras empilhadas
@@ -419,34 +474,79 @@ Ao abrir o arquivo sim_obitos_2020_2024 vê-se que o cabeçalho da tabela começ
 # Dados do SIM:
 # Número de óbitos por ano e pot capítulo da CID-10
 
+# install.packages("readr")
+library(readr)
+
 df_sim <- read_delim(
-  file = "/bases/sim_obitos_2020_2024.csv",
+  file = "E:/Minicursos/IntroR/bases/sim_obitos_2020_2024.csv",
   delim=";",
-  skip=4,
+  skip=3,
   n_max=20,
   locale=locale(encoding = "latin1")
 )
 
 # Conferir a base
 head(df_sim)
-```
 
-### Histograma
+# Causas de interesse
+causas <- c(
+  "I.   Algumas doenças infecciosas e parasitárias",
+  "II.  Neoplasias (tumores)",
+  "IV.  Doenças endócrinas nutricionais e metabólicas",
+  "IX.  Doenças do aparelho circulatório",
+  "X.   Doenças do aparelho respiratório",
+  "XX.  Causas externas de morbidade e mortalidade"
+)
 
-```{r}
+# Manter só essas causas
+df_sim <- df_sim %>%
+  filter(`Capítulo CID-10` %in% causas)
 
-```
+# Conferir a base
+head(df_sim)
 
-### Boxplot
+# Criar porcentagem:
+soma2020 <- df_sim %>% select(`2020`) %>% sum()
+soma2024 <- df_sim %>% select(`2024`) %>% sum()
 
-```{r}
+df_sim <- df_sim %>% 
+  mutate(
+    perc2020 = `2020`/soma2020,
+    perc2024 = `2024`/soma2024
+  )
 
-```
+# Agora vamos tornar essa base wide para long:
 
-### Scatterplot
+library(tidyr)
 
-```{r}
+df1 <- pivot_longer(
+  data=df_sim %>% select(!c(Total,`2020`,`2024`)), 
+  cols=c(perc2020, perc2024),
+  names_to="Ano",
+  values_to="Perc"
+)
 
+# Ajustar o ano na coluna
+df1 <- df1 %>%
+  mutate(
+    Ano = case_when(
+      Ano == "perc2020" ~ "2020",
+      Ano == "perc2024" ~ "2024"
+    )
+  )
+
+
+# df_graf <- df1 %>% filter(`Capítulo CID-10` %in% causas)
+
+ggplot(df1,
+       aes(y=Ano,x=Perc,fill=`Capítulo CID-10`)) +
+  geom_bar(position = "stack", stat="identity") +
+  labs(
+    x="Porcentagem",
+    y="Ano",
+    title="Proporção de óbitos por causa de mortalidade no Brasil em 2020 e 2024"
+  ) +
+  theme_classic(base_size=10)
 ```
 
 # Exportação de arquivos
@@ -459,25 +559,24 @@ library(openxlsx)
 
 write.xlsx(
   x=br22,
-  file="bases/br22.xlsx")
+  file="E:/Minicursos/IntroR/bases/br22.xlsx")
 ```
 
 No caso dos gráficos, podemos exportá-los tanto pela aba "Plots" do R no quadrante direito no canto inferior, quanto via código pela função ggsave do ggplot2:
 
 ```{r}
-graf <- ggplot(
-  data=df1, 
-  aes(x = Age, y = Populacao)) +
-  geom_line(linewidth = 0.8) +
+graf <- ggplot(df1,
+               aes(y=Ano,x=Perc,fill=`Capítulo CID-10`)) +
+  geom_bar(position = "stack", stat="identity") +
   labs(
-    title = "População por idade simples em Moçambique (1997)",
-    x = "Idade",
-    y = "População"
+    x="Porcentagem",
+    y="Ano",
+    title="Proporção de óbitos por causa de mortalidade no Brasil em 2020 e 2024"
   ) +
-  theme_minimal(base_size = 12)
+  theme_classic(base_size=10)
 
 ggsave(
-  filename = "bases/grafico.jpeg",
+  filename = "E:/Minicursos/IntroR/grafico.jpeg",
   plot = graf,
   width = 12,
   height = 7
@@ -590,5 +689,5 @@ for (p in paises) {
   
   print(resultado)
 }
-  
+
 ```
