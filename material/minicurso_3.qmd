@@ -1,0 +1,392 @@
+---
+title: "Introdução a R aplicado a Demografia - 3"
+author: "Wellington Osterno"
+date: 2026-07-29
+format: html
+editor: visual
+---
+
+# Visualização de dados
+
+A visualuzação de dados é, em geral, a apresentação de todo o trabalho do pesquisador ou analista. Pode-se apresentar os dados decritivos da base, características importantes das observações, assim como os resultados finais da pesquisa. Nesse caso, é importante que tenhamos em mente partes importantes da visualização de dados. A seguir alguns aspectos importantes a se considerar quando trabalhamos com a visualização de dados:
+
+- Propósito e Público: É necessário um propósito para apresentar os dados, assim, não precisamos criar gráficos ou tabelas para informações que podem simplesmente ser citadas no texto. Ao mesmo tempo, tabelas podem ser o melhor recurso para apresentar certos tipos de informações, mesmo que estar pudessem ser dispostas em gráficos. Muitas vezes, a descrição estatística de uma base será melhor apresentada em tabela em um artigo do que um gráfico. Precisamos sempre pensar em qual é o público que lerá esse conteúdo e como ele está acostumado a vê-lo. Após, considerar o que mais fazer sentido: manter no formato padrão/usual, ou tentar formas novas que apresenta os dados com mais clareza e propósito.
+
+- Escolha do Gráfico Adequado: Há diversos tipos de gráficos, como vimos alguns na seção anterior. A escolha do tipo adequado para apresentar seus dados é essencial. Por exemplo, o boxplot é interessante para apresentar a distribuição dos dados de uma variável, porém não é adequado para apresentar uma linha do tempo de progressão da variável, nesse caso gráficos de linhas podem ser mais interessantes.
+
+- Simplicidade: Quanto maior o número de detalhes e informações no gráfico, mais difícil é entender a informação central dele. É importante entendermos qual informação queremos passar para o leitor e fazê-lo com simplicidade.
+
+- Contexto e interpretação: Todo gráfico ou suporte visual deve ser acompanhado de um contexto e interpretação. Não deixe para os leitores fazerem a interpretação do seu gráfico, faço-o para certificar-se que o leitor tem acesso à informação de interesse para o discurso que está sendo criado no artigo ou relatório.
+
+# Relacionamentos entre bases
+
+Os relacionamentos entre bases são ferramentas essenciais para a análise de dados, já que são eles que permitem agregar as informações de diferentes bases em uma só, possibilitando a construção de uma base única com todas as informações necessárias para a análise.
+
+Considere três tabelas, que trazem informações sobre algum conteúdo variado. Elas podem trazer informações, por exemplo, sobre: (1) a quantidade de filhos por mulher por Estado; (2) a renda médio da população por Estado e (3) o número médio de pessoas no domicílio por município. As duas primeiras bases têm informações relevantes ao tema da fecundidade no Brasil e poderiam ser associadas a partir do Estado, que identifica uma observação nessa base. Apesar do número médio de pessoas no domicílio também ser de interesse no tema, como a base está por município, e não por Estado, não conseguiríamos juntá-la às outras duas. Uma saída poderia ser a agregação da informação para Estado, porém a base em sua forma original não tem uma variável em comum nas mesmas dimensões que conversa com as outras duas bases. Assim, poderíamos criar um relacionamente (ou *linkage*)
+
+Um conceito importante é apresentado nesse exemplo acima. Na duas bases que podem ser unidas, temos uma variável em comum entre elas na mesma dimensção: o Estado. Ao criarmos um relacionamento, selecionamos uma base para ser a nossa referência e nela a variável em comum (Estado) é chamada de **chave primária**. Enquanto isso, na outra base, a que será unida à de referência, a mesm variável é chamada de **chave estrangeira**.
+
+A seguir são apresentados os tipos de relacionamentos por cardinalidade e, posteriormente, por tipo de relacionamento. A pricípio, precisamos entender o tipo mais comum de relacionamentos: o left join. O left join é a junção entre duas bases a partir da base à esquerda (base de referência) à qual serão adicionadas informações da base à direita (base a ser inserida).
+
+Os relacionamentos também são comumente chamados de uniões, unions ou linkages.
+
+## Cardinalidade
+
+A cardinalidade é a a forma com que as chaves primária e estrangeira se relacionam entre as duas bases de interesse. Ela indica o número de elementos que há em uma base e o número correspondente de elementos na outra base. Iremos começar do mais simples para o mais complexo.
+
+### Um para um (1:1)
+
+A cardinalidade um para um indica que a chave primária apresenta um valor para cada valor da chave estrangeira. O exemplo anterior é um bom exemplo de cardinalidade 1:1, pois cada Estado apareceria uma vez em cada base. Por exemplo, o estado "Bahia" na primeira base só teria um correspondente "Bahia" na segunda base.
+
+Abaixo temos outro exemplo. Cada pessoa tem um "id", um número que o identifica na base. Essa será nossa chave do relacionamente. Queremos linkar as informações de nome e sexo da base *pessoas* com a informação de renda da base *renda*. Para isso, utilizamos a função left_join do pacote dplyr:
+
+```{r}
+# Criar a base fictícia de pessoas
+pessoas <- data.frame(
+  id= 1:10,
+  nome = c(
+    "Ana", "Bruno", "Carlos", "Daniela", "Eduardo",
+    "Fernanda", "Gabriel", "Helena", "Igor", "Julia"
+  ),
+  sexo = c(
+    "F","M","M","F","M",
+    "F","M","F","M","F"
+  )
+)
+
+# Criar a base fictícia de renda
+renda <- data.frame(
+  id= 1:10,
+  renda = c(
+    2500, 4200, 3100, 2800, 5200,
+    3300, 2100, 4700, 3900, 2600
+  )
+)
+
+# Carregar pacote necessário
+library(dplyr)
+
+# Comando para o unir as bases
+# ?left_join
+# ?join()
+
+base1 <- left_join(
+  x=pessoas,
+  y=renda,
+  by="id"
+)
+
+head(base1)
+
+
+```
+
+### Um para muitos (1:n)
+
+```{r}
+# Código dos município
+# IBGE: RELATÓRIO DE DIVISÃO TERRITORIAL BRASILEIRA (2024)
+
+municipios <- data.frame(
+  cod_mun = c(3509502, 3550308, 5300108),
+  municipio = c(
+    "Campinas",
+    "São Paulo",
+    "Brasília"
+  )
+)
+
+domicilios <- data.frame(
+  id_dom = 1:10,
+  cod_mun = c(
+    3509502,3509502,3509502,
+    3550308,3550308,3550308,3550308,
+    5300108,5300108,5300108
+  ),
+  moradores = c(
+    2,4,5,
+    3,2,6,1,
+    4,5,2
+  )
+)
+
+# Join entre as duas bases a partir do código do município
+base2 <- left_join(
+  domicilios,
+  municipios,
+  "cod_mun"
+)
+
+# Perceba que agora temos o nome do município por linha. Podemos utilizar, por exemplo, para criar um gráfico.
+head(base2)
+```
+
+### Join com duas chaves primárias
+
+```{r}
+# Dados fictícios
+
+# Base de população do município por ano
+populacao <- data.frame(
+  municipio = c(
+    "Campinas","Campinas",
+    "São Paulo","São Paulo",
+    "Brasília","Brasília"
+  ),
+  ano = c(
+    2022,2023,
+    2022,2023,
+    2022,2023
+  ),
+  populacao = c(
+    1214000,1223000,
+    12325000,12396000,
+    2817000,2853000
+  )
+)
+
+# Base de óbitos do município por ano
+obitos <- data.frame(
+  municipio = c(
+    "Campinas","Campinas",
+    "São Paulo","São Paulo",
+    "Brasília","Brasília"
+  ),
+  ano = c(
+    2022,2023,
+    2022,2023,
+    2022,2023
+  ),
+  obitos = c(
+    8200,8400,
+    96500,97800,
+    18100,18400
+  )
+)
+
+# Join com duas chaves primárias
+left_join(
+  populacao,
+  obitos,
+  by=c("municipio","ano")
+)
+```
+
+Erro ao criar o join por apenas uma coluna:
+
+```{r}
+# Criar um join com uma coluna quando deveria ser duas
+left_join(
+  populacao,
+  obitos,
+  by=c("municipio")
+)
+```
+
+```{r}
+
+municipios2 <- data.frame(
+  codigo = c(3509502, 3550308, 5300108),
+  municipio = c(
+    "Campinas",
+    "São Paulo",
+    "Brasília"
+  )
+)
+
+domicilios2 <- data.frame(
+  id_dom = 1:10,
+  cod_mun = c(
+    3509502,3509502,3509502,
+    3550308,3550308,3550308,3550308,
+    5300108,5300108,5300108
+  ),
+  moradores = c(
+    2,4,5,
+    3,2,6,1,
+    4,5,2
+  )
+)
+
+left_join(
+  municipios2,
+  domicilios2,
+  by= join_by(codigo == cod_mun),
+)
+
+```
+
+## Tipos de relacionamentos
+
+- **left_join** preserva todos os registros da primeira tabela (a tabela da esquerda). Quando existe uma correspondência na segunda tabela, suas informações são adicionadas ao resultado. Esse é o tipo de join mais utilizado em análises de dados, e o que foi utilizado acima, pois permite enriquecer uma base principal com informações de outra base sem perder observações da tabela original.
+
+- **right_join** funciona de maneira semelhante ao left_join(), mas preserva todos os registros da segunda tabela (a tabela da direita).
+
+- **inner_join** mantém apenas os registros que possuem correspondência em ambas as tabelas. Todas as observações que não encontram uma chave equivalente na outra tabela são descartadas. Para análises que querem somente as observações que existem nas duas bases, essa é a opção mais adequada.
+
+- **full_join** preserva todos os registros das duas tabelas, assim não se perde nenhum tipo de informação, independentemente da existência das observações em cada base. Para as observações que não têm informações para alguma das bases, a função completa com valores ausentes (NA).
+
+# Boas práticas
+
+Em linguagens de programação, a escrita do código de forma mais clara, direta e explicada é importante para o entendimento, leitura e sua alteração. Mesmo o autor do código pode precisar de um código bem feito meses depois da sua escrita para entender e e lembrar o que foi feito. Algumas boas práticas são indicadas abaixo:
+
+## Comentários
+
+Os comentários são importantes para explicar o que está sendo feito e podem ser usados para qualquer observação relevante. Tome cuidado para não deixar mais extenso do que o necessário. O exemplo abaixo explica o que tem na base, o que evita de ter que rodar a base para saber o que é.
+
+```{r}
+#| eval: false
+
+# Importar as taxas específicas de mortalidade 
+
+```
+
+Comentários muito básicos podem ser suprimidos caso ele só repita o que é feito no processo.
+
+```{r}
+#| eval: false
+
+# Adiciona 1 + 1
+
+1+1
+```
+
+## Organização
+
+Para a organização de um código, o interessante é que o caminho da análise seja claro e direto, ou seja, sem precisar fazer retornos a partes anteriores do código ou que tenham passos desnecessários. Muitas vezes precisamos conferir partes da análise quando estamos realizando-a, mas que não é necessária ao final. Essas partes podem ser excluídas.
+
+Normalmente, uma boa estrutura simples pode ser:
+
+Carregar pacotes Importar os dados Limpar e transformar os dados Realizar as análises Produzir tabelas e gráficos Exportar resultados
+
+## Hard coding
+
+Hard coding é inserir diretamente os objetos utilizados na funções, os quais poderiam ser inseridos em outro momento. Por exemplo, ao inserir o caminho da base para sua importação, podemos criar um objeto que carregará o caminho ou inserí-lo diretamento dentro da função. A primeira opção é a mais recomendada, pois facilita na leitura do código e em posteriores alterações.
+
+```{r}
+#| eval: false
+
+# Hard coding
+# Importar as taxas específicas de mortalidade 
+
+nmx <- read_excel("E:/Minicursos/IntroR/bases/nmx_br_m_2022.xlsx")
+
+# Opção mais adequada
+# Importar as taxas específicas de mortalidade 
+
+caminho <- ("E:/Minicursos/IntroR/bases/nmx_br_m_2022.xlsx")
+nmx <- read_excel(caminho)
+```
+
+## Nomenclatura dos objetos
+
+1.  Quanto as nomes que damos no script, o mais interessante é que eles não sejam longos e que identifique rapidamente do que se trata.
+
+**Evite:** 
+`a` 
+`x` 
+`teste2` 
+`objeto_final_novo2`
+
+**Prefira**
+
+`populacao` 
+`obitos` 
+`taxa_mortalidade` 
+`dados_pnad`
+
+2.  A padronização dos nomes também é essencial. Se começamos a dar nomes sempre com *underline* "\_", então o ideal é manter esse formato. por exemplo:
+
+`resultado_final, dados_pnad, mapa_2024`
+
+Se está se utilizando outro formato de nomenclatura, também o mantenha. Ao invés de *underline*, podemos usar letras maiúsculas para separar palavras:
+
+`ResultadoFinal, DadosPnad, Mapa2024`
+
+## Funções
+
+Crie funções que façam atividades específicas. Se for preciso, crie mais de uma função para realizar diversas atividades.
+
+Função agregada:
+
+```{r}
+analisa_mortalidade <- function(base){
+
+  # Remove registros incompletos
+  base <- base |>
+    filter(
+      !is.na(cod_municipio),
+      !is.na(populacao)
+    )
+
+  # Agrega os dados por município
+  base <- base |>
+    group_by(cod_municipio) |>
+    summarise(
+      obitos = sum(obitos),
+      populacao = first(populacao),
+      .groups = "drop"
+    )
+
+  # Calcula a taxa por 100 mil habitantes
+  base <- base |>
+    mutate(
+      taxa = obitos / populacao * 100000
+    )
+
+  # Ordena do maior para o menor valor
+  base <- base |>
+    arrange(desc(taxa))
+
+  return(base)
+
+}
+```
+
+Funções separadas para cada atividade:
+
+```{r}
+#| eval: false
+
+
+limpa_dados <- function(base){
+
+  base |>
+    filter(
+      !is.na(cod_municipio),
+      !is.na(populacao)
+    )
+
+}
+
+calcula_taxa <- function(base){
+
+  base |>
+    group_by(cod_municipio) |>
+    summarise(
+      obitos = sum(obitos),
+      populacao = sum(populacao),
+      .groups = "drop"
+    ) |>
+    mutate(
+      taxa = obitos / populacao * 100000
+    )
+
+}
+
+analisa_mortalidade <- function(base){
+
+  base |>
+    limpa_dados() |>
+    calcula_taxa() |>
+    arrange(desc(taxa))
+
+}
+```
+
+# Sugestões de atividades práticas
+
+As atividades abaixo são somente sugestões para a prática de uso do R. Se você preferir, tente outras atividades!
+
+1. Encontre ou crie um gráfico no qual você identifica erros relacionados à visualização de dados. Pode ser algum gráfico seu feito anteriormente por exemplo. Recrie-o melhorando os aspectos identificados. Utilizar um papel para pensar em como esse gráfico melhorado ficara é uma ótima ideia. A partir disso pense e pesquise como implementá-lo pelo R.
+2. Teste criar um relacionamento entre duas bases que, de alguma forma, se comunicam. Tente utilizar os diferentes tipos de joins e identificar os diferentes tipos de resultados. Bases mais simpls são melhores para praticar.

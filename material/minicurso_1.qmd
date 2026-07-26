@@ -27,7 +27,7 @@ Por fim, o último quadro, na parte inferior à direita, apresenta os plots cria
 Os objetos no R são separados por tipos de variáveis, os quais permitem manipulações e operações específicas. Em geral, é importante que o tipo da variável esteja correto para que as transformações e manipulações dos dados sejam realizadas. A tabela a seguir indica quais são os tipos básicos de variáveis, seu formato e alguns exemplos.
 
 |  |  |  |
-|:----------------------:|:----------------------:|:----------------------:|
+|:--:|:--:|:--:|
 | **Tipo** | **Formato** | **Exemplos** |
 | Integer | Números inteiros | 1, 2, 3, 1000, -1000 |
 | Numeric | Números decimais, com ponto como separador  | 0.1, 0.599. 1.0000 |
@@ -665,3 +665,29 @@ library(dplyr)
 As informações sobre o pacote são muito importantes e é comum chamarmos de documentação. A documentação de um pacote apresenta a descrição e objetivo do pacote, os autores e contribuidores, as funções e suas respectivas documentações e demais informações necessárias.
 
 Ao utilizar um pacote ou uma função, é essencial abrir a documentação e entender como o pacote/função está organizado. Nas documentações de funções, também existem as diversas informações relacionadas à elas. Uma parte essencial é compreender os argumentos da função. Ou seja, quais são os elementos necessários para utilizá-la. Nesse caso, nas funções que criamos acima, o **x** e o **fnames** são argumentos.
+
+# Sugestões de atividades práticas
+
+As atividades abaixo são somente sugestões para a prática de uso do R. Se você preferir, tente outras atividades!
+
+1.  Crie dois ou mais objetos que identifiquem número (`a <- 1`) e faça comparações entre os objetos numéricos. Além disso, compare os objetos com número de fato, como: `a == 2`.
+
+2.  Crie dois ou mais objetos que identifiquem palavras e faça pelo menos duas comparações entre elas e duas transformações à sua escolha.
+
+3.  Crie uma pequena base de dados em um formato longo. Lembre-se que a função Data.Frame() permite essa criação no R e que o helper do R () pode ajudar com a estrutura.
+
+4.  Leia uma documentação de pacote e uma documentação de função. Não precisa ler tudo, pois normalmente são documentos extensos, mas leia o início, que descreve o que é e o que faz o pacote/função. Há várias exemplos de pacote e funções usadas acima e na aula anterior, mas aqui estão algumas sugestões:
+
+    1.  Pacotes:
+
+        - [DemoTools](https://timriffe.github.io/DemoTools/)
+
+        - [dplyr](https://dplyr.tidyverse.org/)
+
+        - [ggplot2](https://ggplot2.tidyverse.org/)
+
+    2.  Funções:
+
+        - [check_heaping_whipple](https://timriffe.github.io/DemoTools/reference/check_heaping_whipple.html)
+
+        - [ggplot](https://www.rdocumentation.org/packages/ggplot2/versions/0.9.0/topics/ggplot)

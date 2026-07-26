@@ -351,7 +351,7 @@ De acordo com o tempo e a necessidade, iremos conhecendo melhor as possibilidade
 Alguns outros tipos de gráficos são interessantes. Na tabela abaixo temos alguns dos principais tipos e exemplos básicos.
 
 |           Gráfico            |                  Exemplo                   |
-|:----------------------------:|:------------------------------------------:|
+|:---------------------------:|:-----------------------------------------:|
 |          **Barras**          |      Número de habitantes por região       |
 |    **Barras empilhadas**     |       Proporção de óbitos por causa        |
 |        **Histograma**        |  Distribuição das idades de uma população  |
@@ -691,3 +691,11 @@ for (p in paises) {
 }
 
 ```
+
+# Sugestões de atividades práticas
+
+As atividades abaixo são somente sugestões para a prática de uso do R. Se você preferir, tente outras atividades, como encontrar uma função não vista no DemoTools e tentar usá-la.
+
+1.  Utilize as funções do DemoTools apresentadas com outras informações. Podemos utilizar os outros países que têm na base utilizada ou outros a sua escolha.
+
+2.  Crie um gráfico básico com o ggplot2. Bases fictícias podem ser encontradas em diversos websites ou podemos utilizar dados demográficos para uma simples visualização. A ideia é praticar, então não tem problema repetir, mas que o código seja feito manualmente.
