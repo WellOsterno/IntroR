@@ -11,6 +11,8 @@ website:
         text: Aula 1
       - href: material/minicurso_2.qmd
         text: Aula 2
+      - href: material/minicurso_3.qmd
+        text: Aula 2
 
 format:
   html:
